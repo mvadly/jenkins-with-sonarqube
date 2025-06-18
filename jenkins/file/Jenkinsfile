@@ -1,0 +1,36 @@
+// Jenkinsfile
+pipeline {
+    agent any
+
+    environment {
+        SONARQUBE_SERVER = 'sonarqube' // Name of SonarQube server in Jenkins config
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'f1a1ef52-a4e6-43ab-879b-1360da0cadbb', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    sh "git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@gitlab.com/dycs/infolelang-openapi.git --branch ${params.BRANCH.replace('refs/heads/','')} --single-branch"
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv("${SONARQUBE_SERVER}") {
+                    sh '''
+                      sonar-scanner \
+                        -Dsonar.projectKey=infolelang-openapi \
+                        -Dsonar.projectName="Infolelang OpenAPI" \
+                        -Dsonar.host.url=http://host.docker.internal:9000 \
+                        -Dsonar.login=$SONAR_TOKEN
+                    '''
+                }
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
