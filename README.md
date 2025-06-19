@@ -18,7 +18,7 @@ To set up and run SonarQube, follow these steps:
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/mvadly/jenkins-with-sonarqube.git
-   cd infolelang-assets/sonarqube-setup
+   cd jenkins-with-sonarqube
    ```
 
 2. **Start the SonarQube instance**:
